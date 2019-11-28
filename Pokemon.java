@@ -21,10 +21,13 @@ import javax.swing.ImageIcon;
 import java.awt.Image;
 
 public class Pokemon {
-    public final static ImageIcon hhImageIcon = new ImageIcon("src/arraylist/hh.jpg");
+    public final static ImageIcon hhImageIcon = new ImageIcon("src/arraylist/hh.jpg"); //new URL("https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Hulk_Hogan.jpg/100px-Hulk_Hogan.jpg")
 
     private final static int imageScale = 100;
     private final static Map<String, ImageIcon> imageCacheMap = new HashMap<String, ImageIcon>();
+    static {
+        imageCacheMap.put("", Pokemon.hhImageIcon);
+    }
     private final static Map<String, Future<ImageIcon>> futureImageCacheMap = new ConcurrentHashMap<String, Future<ImageIcon>>();
 
     private String name;
@@ -126,7 +129,7 @@ public class Pokemon {
                 Matcher m = r.matcher(result);
 
                 if (m.find()) {
-                    String imageUrlStr = m.group(1).replace("\\u003d", "\u003d");
+                    String imageUrlStr = m.group(1).replace("\\u003d", "\u003d").replace("\\u0026", "\u0026");
 
                     // Image image = ImageIO.read(new URL(imageUrl)).getScaledInstance(Pokemon.imageScale, Pokemon.imageScale, Image.SCALE_DEFAULT);
 
@@ -140,6 +143,7 @@ public class Pokemon {
                     imageConn.setRequestProperty("referer", "https://www.google.com/");
                     imageConn.setReadTimeout(5000);
 
+                    //sometimes throws a nullptrexception for reddit jpgs
                     Image image = ImageIO.read(imageConn.getInputStream()).getScaledInstance(Pokemon.imageScale, Pokemon.imageScale, Image.SCALE_DEFAULT);
 
                     if (image != null) {
@@ -153,7 +157,7 @@ public class Pokemon {
 
                 return Pokemon.hhImageIcon;
             } catch (Exception e) {
-                System.err.println(e);
+                // System.err.println(e);
                 return Pokemon.hhImageIcon;
             } finally {
                 nf.cancel(true);
